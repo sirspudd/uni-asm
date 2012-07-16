@@ -1,0 +1,138 @@
+;Donald Carr
+;Dumb terminal
+
+.include "8535def.inc"
+
+.def	Temp1 = R16
+.def	Temp2 = R17
+.def	Temp3 = R18
+.def	tho = R19
+.def	hun = R20
+.def	ten = R21
+.def	unit = R22
+
+.equ	baud = 207
+
+.cseg
+.org $000
+
+Reset : rjmp	Start
+
+	.org $011
+	
+Start :		ldi Temp1,LOW(RAMEND)
+		out SPL,Temp1
+		ldi Temp1,HIGH(RAMEND)
+		out SPH,Temp1
+		
+;		ser Temp1
+;		out DDRC,Temp1
+;		clr DispNum
+		
+		;Set baud rate
+		ldi 	Temp1,baud
+		out	UBRR,Temp1
+		;Enable the receiver and transmittor
+		ldi 	Temp1,0b00011000
+		out	UCR,Temp1
+		;Hopefully configure a2d
+		ldi 	Temp1,0b00000000
+		out	ADMUX,Temp1
+		ldi 	Temp1,0b11100000
+		out	ADCSR,Temp1
+
+;repeat ad finitum
+			
+pondernavel: 	sbic	ADCSR,ADIF
+		rcall	carpe
+		rjmp	pondernavel	
+
+carpe:		cbi	ADCSR,ADIF
+		in	Temp1,ADCL
+		in	Temp2,ADCH
+		rcall 	Convert
+		rcall 	OutLoop
+		;Delay
+		ret
+
+OutLoop:	mov	Temp1,Tho
+		subi	Temp1,-48
+		rcall	Waitclear
+		mov	Temp1,hun
+		subi	Temp1,-48
+		rcall	Waitclear
+		mov	Temp1,ten
+		subi	Temp1,-48
+		rcall	Waitclear
+		mov	Temp1,unit
+		subi	Temp1,-48
+		rcall	Waitclear
+		rcall	LineFeed
+		ret	
+
+
+;This is a generic send method, will be call with each send
+Waitclear:	sbis	USR,UDRE
+		rjmp	Waitclear
+		out	UDR,Temp1
+		ret
+		
+LineFeed:	sbis	USR,UDRE
+		rjmp	LineFeed
+		ldi	Temp1,$0D
+		out	UDR,Temp1
+		
+Carriage:	sbis	USR,UDRE
+		rjmp	Carriage
+		ldi	Temp1,$0A
+		out	UDR,Temp1
+		
+		ret
+		
+Convert:	push	Temp1
+		push	Temp2
+		push	Temp3
+		
+		clr	tho
+		clr	hun
+		clr	ten
+		clr	unit
+
+DoThou:		subi	Temp1,LOW(1000)
+		sbci	Temp2,HIGH(1000)
+		brcs	NowHun
+		inc	tho
+		rjmp	DoThou
+		
+NowHun:		ldi	Temp3,LOW(1000)
+		add	Temp1,Temp3
+		ldi	Temp3,HIGH(1000)
+		adc	Temp2,Temp3
+		
+
+DoHun:		subi	Temp1,100
+		sbci	Temp2,0
+		brcs	NowTen
+		inc	hun
+		rjmp	DoHun
+		
+NowTen:		ldi	Temp3,100
+		add	Temp1,Temp3
+		
+DoTen:		subi	Temp1,10
+		brcs	NowUnit
+		inc	ten
+		rjmp	DoTen
+		
+NowUnit:	ldi	Temp3,10
+		add	Temp1,Temp3
+		mov	unit, Temp1
+		
+		pop	Temp1
+		pop	Temp2
+		pop	Temp3
+		
+		ret
+
+.exit			
+		

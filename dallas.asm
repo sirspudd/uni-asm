@@ -1,0 +1,311 @@
+;Donald Carr
+;Dallas Chip reader
+
+	.include "8535def.inc"
+
+	.def	achar	=	r0
+	.def	Temp1	=	r16
+	.def	Temp2	=	r17
+	.def	Count	=	r18
+	.def	Count2	=	r19
+	.def	crcvar	=	r20
+	.def	crcwork	=	r21
+		
+	.equ	baud = 207
+	
+	.cseg
+	.org $000
+	
+Reset : rjmp	Start
+	
+	.org	$011
+Start:	ldi Temp1,LOW(RAMEND)
+	out SPL,Temp1
+	ldi Temp1,HIGH(RAMEND)
+	out SPH,Temp1
+	
+	;Set baud rate
+	ldi 	Temp1,baud
+	out	UBRR,Temp1
+	;Enable the receiver and transmittor
+	ldi 	Temp1,0b00011000
+	out	UCR,Temp1
+	
+	sbi 	DDRB,1
+	cbi 	PINB,1
+				
+	;start timer
+	in 	Temp1,TCCR0;clk/8
+	sbr 	Temp1,0b00000010
+	out	TCCR0,Temp1
+	
+	in 	Temp1,TCNT0
+	
+	sbr 	Temp1,0x00
+	out	TCNT0,Temp1
+	;clr	TimerCount
+	
+	
+;detect chip
+;sbi 	DDRB,0;output
+;cbi 	DDRB,0;input
+	
+presence:	;make up 600 by multiplying these numbers
+		cbi 	DDRB,0
+		cbi 	PORTB,0
+		
+		ldi	Count,5 ;6 hops
+high:		ldi	Temp1,90
+		rcall 	Delay
+		dec	Count
+		brmi	check
+		rcall	detect
+		rjmp	high
+check:		brts	handshake
+		rjmp	low		
+low:		sbi 	DDRB,0
+		cbi 	PORTB,0
+		
+		ldi	Count,3		
+lowloop:	ldi	Temp1,200
+		rcall 	Delay
+		dec	Count
+		brmi	presence
+		rjmp	lowloop
+
+detect:		sbis	PINB,0
+		set
+		ret
+
+crcsuccess:	rcall	anounce
+		rcall	serial
+		rjmp	endjudge
+		
+crcfailure:	rcall	error
+		rcall	curse
+		ret
+
+judgecrc:	cpi	crcvar,0
+		breq	crcsuccess
+		rcall	crcfailure
+endjudge:	ret											
+		
+;send 0F to chip least significant bit first
+handshake:					;sbi 	PORTB,1
+						rcall	ones
+						rcall	zeros
+						rcall	readchip
+						rcall	judgecrc
+						clt
+						;cbi 	PORTB,1	
+						rjmp	low	
+		
+anounce:	ldi 	ZL,LOW(Message*2)
+		ldi 	ZH,HIGH(Message*2)
+		
+blab:		lpm
+		ldi	Temp1,1
+		add 	ZL, Temp1
+		clr 	Temp1
+		adc 	ZH,Temp1
+		mov	Temp1,achar
+		cpi	Temp1,$1B
+		breq	finished
+		rcall	Send
+		rjmp	blab
+finished:	ret
+
+curse:		ldi 	ZL,LOW(rudemessage*2)
+		ldi 	ZH,HIGH(rudemessage*2)
+		
+waggle:		lpm
+		ldi	Temp1,1
+		add 	ZL, Temp1
+		clr 	Temp1
+		adc 	ZH,Temp1
+		mov	Temp1,achar
+		cpi	Temp1,$1B
+		breq	calmdown
+		rcall	Send
+		rjmp	waggle
+calmdown:	rcall	Linefeed
+		ret
+		
+zeros:		ldi	Count,3;4 loops hopefully
+zeroloop:	sbi 	DDRB,0 ;2 commands low
+		cbi 	PORTB,0
+		ldi	Temp1,100
+		rcall	Delay
+		cbi 	DDRB,0;high
+		cbi	PORTB,0
+		ldi	Temp1,10
+		rcall	Delay
+		dec	Count
+		brpl	zeroloop
+		ret
+		
+ones:		ldi	Count,3;4 loops hopefully
+onesloop:	
+		sbi 	DDRB,0 ;2 commands low
+		cbi 	PORTB,0
+		
+		ldi	Temp1,5
+		rcall	Delay
+		
+		cbi 	DDRB,0;high
+		cbi	PORTB,0
+		
+		ldi	Temp1,100
+		rcall	Delay
+		
+		dec	Count
+		brpl	onesloop
+		ret
+
+readchip: 	ldi 	XL,LOW(Dallasbits) ;Correction
+		ldi 	XH,HIGH(Dallasbits)
+		ldi	Count,15;16 will make register negative
+		clr	crcvar
+
+readmes:  ldi	Count2,3 ;4 bits
+	  clr	Temp2
+	  ;Temp2 used to house signal
+readloop:	  
+	  sbi 	DDRB,0 ;2 commands low
+	  cbi 	PORTB,0
+	  ldi	Temp1,5
+	  rcall	Delay
+	  
+	  cbi 	DDRB,0
+	  cbi	PORTB,0
+	  ldi	Temp1,5
+	  rcall	Delay
+	  
+	  ;set one by default
+	  lsr	Temp2		  
+	  sbic	PINB,0
+	  sbr	Temp2,0b10000000
+	  ;Call CRC check here
+	  rcall	crccheck
+	  ldi	Temp1,70
+	  rcall	Delay
+	  
+	  dec	Count2
+	  brpl	readloop
+	  
+	  swap	Temp2
+	  st	X+,Temp2
+	  
+	  dec	Count
+	  brpl	readmes	  	  
+	  ret
+
+Delay:	push	Temp2
+	in	Temp2,SREG
+	push	Temp2
+	push	Temp1
+
+	ldi 	Temp2,0
+	sbc	Temp2,Temp1
+	out	TCNT0,Temp2
+	in	Temp2,TIFR
+	sbr	Temp2,0b00000001
+	out	TIFR,Temp2
+
+Inner:	in	Temp1,TIFR
+
+	sbrs	Temp1,0
+	rjmp	Inner
+
+	pop	Temp1
+	pop	Temp2
+	out	SREG,Temp2
+	pop	Temp2
+	ret
+	
+	;Chip reading method
+	
+serial: ldi 	XL,LOW(Dallasbits) ;Correction
+	ldi 	XH,HIGH(Dallasbits)
+	ldi	Temp1,16
+	add 	XL, Temp1
+	clr 	Temp1
+	adc 	XH,Temp1
+	
+	ldi	Count,15
+	;loop with the hex chars
+serialloop:		;ldi	Temp1,1
+			;add 	XL, Temp1
+			;clr 	Temp1
+			;adc 	XH,Temp1
+			ld	Temp1,-X
+			
+			ldi 	ZL,LOW(Num2Ascii*2)
+			ldi 	ZH,HIGH(Num2Ascii*2)
+			
+			add 	ZL, Temp1
+			clr 	Temp1
+			adc 	ZH,Temp1
+			lpm
+				
+			mov	Temp1,achar
+			rcall	Send
+			dec	Count
+			brpl	serialloop
+			;else exit
+			rcall	LineFeed
+			ret
+
+crccheck:	;input branch first
+		sbrc	Temp2,7
+		rjmp	onebranch
+		rjmp	zerobranch
+onebranch:	sbrc	crcvar,0	
+		rjmp	crcnotxor
+		rjmp	crcxor
+zerobranch:	sbrc	crcvar,0	
+		rjmp	crcxor
+		rjmp	crcnotxor
+
+crcfinish:	ror	crcvar
+		ret
+
+crcxor:		ldi	crcwork,$18
+		eor	crcvar,crcwork
+		sec
+		rjmp	crcfinish
+
+crcnotxor:	clc
+		rjmp	crcfinish
+
+LineFeed:	sbis	USR,UDRE
+		rjmp	LineFeed
+		ldi	Temp1,$0D
+		out	UDR,Temp1
+		
+Carriage:	sbis	USR,UDRE
+		rjmp	Carriage
+		ldi	Temp1,$0A
+		out	UDR,Temp1
+		ret
+
+Error:		ldi	Temp1,$07
+		rcall	Send
+		ret
+	
+Send:		sbis	USR,UDRE
+		rjmp	Send
+		out	UDR,Temp1
+		ret
+;ascii codes
+Num2Ascii:	.db "0123456789ABCDEF"
+Message: 	.db "Your dallas chip number is:",$1B	
+rudeMessage: 	.db "Bells claxoning, sirens blaring : your chip was incorrectly read damnit",$1B	
+	
+;***************************************************
+
+	.dseg
+	.org $080
+
+Dallasbits:	.byte	16		
+	.exit

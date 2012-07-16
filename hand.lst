@@ -1,0 +1,26 @@
+
+AVRASM ver. 1.54  J:\code\hand.asm Thu May 12 12:06:22 2005
+
+
+          		.nolist
+          		.org $000
+000000 c01f      Start :	rjmp	Label
+         
+          		.org 	$020
+000020 930f      Label:	push	R16
+000021 2700      		clr		R16
+000022 ea0f      		ldi		R16,175
+000023 0f01      		add		R16,R17
+000024 3f0b      		cpi		R16,$FB
+000025 f011      		breq	subroutine
+000026 912f      		pop		R18
+000027 cff8      		rjmp	Label
+000028 0000      subroutine:	nop
+000029 b326      			in R18, PINB
+00002a 6a2a      			sbr R18,0b10101010
+00002b bb25      			out	PORTC,R18
+00002c 9ac3      			sbi	PORTB,PB3
+         
+00002d 9508      			ret
+
+Assembly complete with no errors.

@@ -1,0 +1,1003 @@
+
+AVRASM ver. 1.54  C:\code\g02c0108exam.asm Thu Jun 02 08:36:38 2005
+
+
+warning : Register already defined by the .DEF directive
+warning : Register already defined by the .DEF directive
+warning : Register already defined by the .DEF directive
+         ;Donald Carr
+         
+          .include "8535def.inc"
+         ;***************************************************************************
+         ;* A P P L I C A T I O N   N O T E   F O R   T H E   A V R   F A M I L Y
+         ;* 
+         ;* Number				:AVR000
+         ;* File Name			:"8535def.inc"
+         ;* Title				:Register/Bit Definitions for the AT90S8535
+         ;* Date                 :99.01.28
+         ;* Version              :1.30
+         ;* Support telephone	:+47 72 88 43 88 (ATMEL Norway)
+         ;* Support fax			:+47 72 88 43 99 (ATMEL Norway)
+         ;* Support E-mail		:avr@atmel.com
+         ;* Target MCU			:AT90S8535
+         ;*
+         ;* DESCRIPTION
+         ;* When including this file in the assembly program file, all I/O register	
+         ;* names and I/O register bit names appearing in the data book can be used.
+         ;* In addition, the six registers forming the three data pointers X, Y and
+         ;* Z have been assigned names XL - ZH. Highest RAM address for Internal 
+         ;* SRAM is also defined 
+         ;*
+         ;* The Register names are represented by their hexadecimal address.
+         ;* 
+         ;* The Register Bit names are represented by their bit number (0-7).
+         ;* 
+         ;* Please observe the difference in using the bit names with instructions
+         ;* such as "sbr"/"cbr" (set/clear bit in register) and "sbrs"/"sbrc" 
+         ;* (skip if bit in register set/cleared). The following example illustrates
+         ;* this:
+         ;* 
+         ;* in	r16,PORTB				;read PORTB latch
+         ;* sbr	r16,(1<<PB6)+(1<<PB5)	;set PB6 and PB5 (use masks, not bit#)
+         ;* out  PORTB,r16				;output to PORTB
+         ;*
+         ;* in	r16,TIFR				;read the Timer Interrupt Flag Register
+         ;* sbrc	r16,TOV0				;test the overflow flag (use bit#)
+         ;* rjmp	TOV0_is_set				;jump if set
+         ;* ...							;otherwise do something else
+         ;***************************************************************************
+         
+         ;***** Specify Device
+          .device AT90S8535
+         
+         ;***** I/O Register Definitions
+          .equ	SREG	=$3f
+          .equ	SPH		=$3e
+          .equ	SPL		=$3d
+          .equ	GIMSK	=$3b
+          .equ	GIFR	=$3a
+          .equ	TIMSK	=$39
+          .equ	TIFR	=$38
+          .equ	MCUCR	=$35
+          .equ	MCUSR	=$34
+          .equ	TCCR0	=$33
+          .equ	TCNT0	=$32
+          .equ	TCCR1A	=$2f
+          .equ	TCCR1B	=$2e
+          .equ	TCNT1H	=$2d
+          .equ	TCNT1L	=$2c
+          .equ	OCR1AH	=$2b
+          .equ	OCR1AL	=$2a
+          .equ	OCR1BH	=$29
+          .equ	OCR1BL	=$28
+          .equ	ICR1H	=$27
+          .equ	ICR1L	=$26
+          .equ	TCCR2	=$25
+          .equ	TCNT2	=$24
+          .equ	OCR2	=$23
+          .equ	ASSR	=$22
+          .equ	WDTCR	=$21
+          .equ	EEARH	=$1f
+          .equ	EEARL	=$1e
+          .equ	EEDR	=$1d
+          .equ	EECR	=$1c
+          .equ	PORTA	=$1b
+          .equ	DDRA	=$1a
+          .equ	PINA	=$19
+          .equ	PORTB	=$18
+          .equ	DDRB	=$17
+          .equ	PINB	=$16
+          .equ	PORTC	=$15
+          .equ	DDRC	=$14
+          .equ	PINC	=$13
+          .equ	PORTD	=$12
+          .equ	DDRD	=$11
+          .equ	PIND	=$10
+          .equ	SPDR	=$0f
+          .equ	SPSR	=$0e
+          .equ	SPCR	=$0d
+          .equ	UDR		=$0c
+          .equ	USR		=$0b
+          .equ	UCR		=$0a
+          .equ	UBRR	=$09
+          .equ	ACSR	=$08
+          .equ    ADMUX   =$07
+          .equ    ADCSR   =$06
+          .equ    ADCH    =$05
+          .equ    ADCL    =$04
+         
+         
+         ;***** Bit Definitions
+         ;MCUSR
+          .equ	EXTRF	=1
+          .equ	PORF	=0
+         
+         ;GIMSK
+          .equ	INT1	=7
+          .equ	INT0	=6
+         
+         ;GIFR
+          .equ	INTF1	=7
+          .equ	INTF0	=6
+         
+         ;TIMSK
+          .equ	OCIE2	=7
+          .equ	TOIE2	=6
+          .equ	TICIE1	=5
+          .equ	OCIE1A	=4
+          .equ	OCIE1B	=3
+          .equ	TOIE1	=2
+          .equ	TOIE0	=0
+         
+         ;TIFR
+          .equ	OCF2	=7
+          .equ	TOV2	=6
+          .equ	ICF1	=5
+          .equ	OCF1A	=4
+          .equ	OCF1B	=3
+          .equ	TOV1	=2
+          .equ	TOV0	=0
+         
+         ;MCUCR
+          .equ	SE		=6
+          .equ	SM1		=5
+          .equ	SM0		=4
+          .equ	ISC11	=3
+          .equ	ISC10	=2
+          .equ	ISC01	=1
+          .equ	ISC00	=0
+         
+         ;TCCR0
+          .equ	CS02	=2
+          .equ	CS01	=1
+          .equ	CS00	=0
+         
+         ;TCCR1A
+          .equ	COM1A1	=7
+          .equ	COM1A0	=6
+          .equ	COM1B1	=5
+          .equ	COM1B0	=4
+          .equ	PWM11	=1
+          .equ	PWM10	=0
+         
+         ;TCCR1B
+          .equ	ICNC1	=7
+          .equ	ICES1	=6
+          .equ	CTC1	=3
+          .equ	CS12	=2
+          .equ	CS11	=1
+          .equ	CS10	=0
+         
+         ;TCCR2
+          .equ	PWM2	=6
+          .equ	COM21	=5
+          .equ	COM20	=4
+          .equ	CTC2	=3
+          .equ	CS22	=2
+          .equ	CS21	=1
+          .equ	CS20	=0
+         
+         ;ASSR
+          .equ	AS2		=3
+          .equ	TCN2UB	=2
+          .equ	OCR2UB	=1
+          .equ	TCR2UB	=0
+         
+         ;WDTCR
+          .equ	WDTOE	=4
+          .equ	WDE		=3
+          .equ	WDP2	=2
+          .equ	WDP1	=1
+          .equ	WDP0	=0
+         
+         ;EECR
+          .equ	EERIE	=3
+          .equ	EEMWE	=2
+          .equ	EEWE	=1
+          .equ	EERE	=0
+         
+         ;PORTA
+          .equ	PA7		=7
+          .equ	PA6		=6
+          .equ	PA5		=5
+          .equ	PA4		=4
+          .equ	PA3		=3
+          .equ	PA2		=2
+          .equ	PA1		=1
+          .equ	PA0		=0
+         
+         ;DDRA
+          .equ	DDA7	=7
+          .equ	DDA6	=6
+          .equ	DDA5	=5
+          .equ	DDA4	=4
+          .equ	DDA3	=3
+          .equ	DDA2	=2
+          .equ	DDA1	=1
+          .equ	DDA0	=0
+         
+         ;PINA
+          .equ	PINA7	=7
+          .equ	PINA6	=6
+          .equ	PINA5	=5
+          .equ	PINA4	=4
+          .equ	PINA3	=3
+          .equ	PINA2	=2
+          .equ	PINA1	=1
+          .equ	PINA0	=0
+         
+         ;PORTB
+          .equ	PB7		=7
+          .equ	PB6		=6
+          .equ	PB5		=5
+          .equ	PB4		=4
+          .equ	PB3		=3
+          .equ	PB2		=2
+          .equ	PB1		=1
+          .equ	PB0		=0
+         
+         ;DDRB
+          .equ	DDB7	=7
+          .equ	DDB6	=6
+          .equ	DDB5	=5
+          .equ	DDB4	=4
+          .equ	DDB3	=3
+          .equ	DDB2	=2
+          .equ	DDB1	=1
+          .equ	DDB0	=0
+         
+         ;PINB
+          .equ	PINB7	=7
+          .equ	PINB6	=6
+          .equ	PINB5	=5
+          .equ	PINB4	=4
+          .equ	PINB3	=3
+          .equ	PINB2	=2
+          .equ	PINB1	=1
+          .equ	PINB0	=0
+         
+         ;PORTC
+          .equ	PC7		=7
+          .equ	PC6		=6
+          .equ	PC5		=5
+          .equ	PC4		=4
+          .equ	PC3		=3
+          .equ	PC2		=2
+          .equ	PC1		=1
+          .equ	PC0		=0
+         
+         ;DDRC
+          .equ	DDC7	=7
+          .equ	DDC6	=6
+          .equ	DDC5	=5
+          .equ	DDC4	=4
+          .equ	DDC3	=3
+          .equ	DDC2	=2
+          .equ	DDC1	=1
+          .equ	DDC0	=0
+         
+         ;PINC
+          .equ	PINC7	=7
+          .equ	PINC6	=6
+          .equ	PINC5	=5
+          .equ	PINC4	=4
+          .equ	PINC3	=3
+          .equ	PINC2	=2
+          .equ	PINC1	=1
+          .equ	PINC0	=0
+         
+         ;PORTD
+          .equ	PD7		=7
+          .equ	PD6		=6
+          .equ	PD5		=5
+          .equ	PD4		=4
+          .equ	PD3		=3
+          .equ	PD2		=2
+          .equ	PD1		=1
+          .equ	PD0		=0
+         
+         ;DDRD
+          .equ	DDD7	=7
+          .equ	DDD6	=6
+          .equ	DDD5	=5
+          .equ	DDD4	=4
+          .equ	DDD3	=3
+          .equ	DDD2	=2
+          .equ	DDD1	=1
+          .equ	DDD0	=0
+         
+         ;PIND
+          .equ	PIND7	=7
+          .equ	PIND6	=6
+          .equ	PIND5	=5
+          .equ	PIND4	=4
+          .equ	PIND3	=3
+          .equ	PIND2	=2
+          .equ	PIND1	=1
+          .equ	PIND0	=0
+         
+         ;SPCR
+          .equ	SPIE	=7
+          .equ	SPE		=6
+          .equ	DORD	=5
+          .equ	MSTR	=4
+          .equ	CPOL	=3
+          .equ	CPHA	=2
+          .equ	SPR1	=1
+          .equ	SPR0	=0
+         
+         ;SPSR
+          .equ	SPIF	=7
+          .equ	WCOL	=6
+         
+         ;USR
+          .equ	RXC		=7
+          .equ	TXC		=6
+          .equ	UDRE	=5
+          .equ	FE		=4
+          .equ	OR		=3
+         
+         ;RXCIE
+          .equ	RXCIE	=7
+          .equ	TXCIE	=6
+          .equ	UDRIE	=5
+          .equ	RXEN	=4
+          .equ	TXEN	=3
+          .equ	CHR9	=2
+          .equ	RXB8	=1
+          .equ	TXB8	=0
+         
+         ;ACSR
+          .equ	ACD		=7
+          .equ	ACO		=5
+          .equ	ACI		=4
+          .equ	ACIE	=3
+          .equ	ACIC	=2
+          .equ	ACIS1	=1
+          .equ	ACIS0	=0
+         
+         ;ADMUX
+          .equ	MUX2	=2
+          .equ	MUX1	=1
+          .equ	MUX0	=0
+         
+         ;ADCSR
+          .equ	ADEN	=7
+          .equ	ADSC	=6
+          .equ	ADFR	=5
+          .equ	ADIF	=4
+          .equ	ADIE	=3
+          .equ	ADPS2	=2
+          .equ	ADPS1	=1
+          .equ	ADPS0	=0
+         
+          .def	XL		=r26
+          .def	XH		=r27
+          .def	YL		=r28
+          .def	YH		=r29
+          .def	ZL		=r30
+          .def	ZH		=r31
+         
+          .equ 	RAMEND  =$25F	;Last On-Chip SRAM location
+          .equ	XRAMEND =$25F
+          .equ	E2END	=$1FF
+          .equ	FLASHEND=$FFF
+         
+          .equ	INT0addr=$001	;External Interrupt0 Vector Address
+          .equ	INT1addr=$002	;External Interrupt1 Vector Address
+          .equ	OC2addr =$003	;Timer2 compare match Vector Address
+          .equ	OVF2addr=$004	;Timer2 overflow Vector Address
+          .equ	ICP1addr=$005	;Timer1 Input Capture Vector Address
+          .equ	OC1Aaddr=$006	;Timer1 Output Compare A Interrupt Vector Address
+          .equ	OC1Baddr=$007	;Timer1 Output Compare B Interrupt Vector Address
+          .equ	OVF1addr=$008	;Overflow1 Interrupt Vector Address
+          .equ	OVF0addr=$009	;Overflow0 Interrupt Vector Address
+          .equ	SPIaddr =$00A	;SPI Interrupt Vector Address
+          .equ	URXCaddr=$00B	;UART Receive Complete Interrupt Vector Address
+          .equ	UDREaddr=$00C	;UART Data Register Empty Interrupt Vector Address
+          .equ	UTXCaddr=$00D	;UART Transmit Complete Interrupt Vector Address
+          .equ	ADCCaddr=$00E	;ADC Conversion Complete Interrupt Vector Address
+          .equ	ERDYaddr=$00F	;EEPROM Write Complete Interrupt Vector Address
+          .equ	ACIaddr =$010	;Analog Comparator Interrupt Vector Address
+         
+          .def	Mes = R0
+          .def	Temp1 = R16
+          .def	Temp2 = R17
+          .def	Temp3 = R18
+          .def	TimerCount = R19
+          .def	PwmStep = R20
+          .def	PwmValue = R21
+          .def	DispNum = R22
+          .def	SegPattern = R23
+          .def	tho = R24
+          .def	hun = R25
+          .def	ten = R26
+          .def	unit = R27
+          .def	Temp4 = R28
+         
+         ;See page 64 in Atmel manual to work out all baud rates
+         
+          .equ	baud2400 = 207
+          .equ	baud4800 = 103
+          .equ	baud9600 = 51
+          .equ	baud14400 = 34		
+         
+         ;Constants
+         
+          .equ	SPECIAL = 'u'		
+          .equ	VCHAR = 'V'		
+          .equ	OCHAR = 'R'		
+          .equ	BCHAR = 'B'		
+         
+         
+          		.cseg
+          		.org $000
+         
+000000 c010      Reset : 	rjmp	Start
+         	
+          		.org $001
+         		
+000001 c0e6      		rjmp	EXT_INT0
+         		
+          		.org $009
+         		
+000009 c0c9      		rjmp	TIM0_OVF
+         	
+          		.org $011
+         	
+          Start :		;initialise stack
+         
+000011 e50f      		ldi Temp1,LOW(RAMEND)
+000012 bf0d      		out SPL,Temp1
+000013 e002      		ldi Temp1,HIGH(RAMEND)
+000014 bf0e      		out SPH,Temp1
+         		
+         		;Set baud rate
+         		;choose from constants declared above
+000015 e303      		ldi 	Temp1,baud9600
+000016 b909      		out	UBRR,Temp1
+         		
+         		;Enable the receiver and transmittor
+000017 e108      		ldi 	Temp1,0b00011000
+000018 b90a      		out	UCR,Temp1
+         		
+         		;-------------------------------------------------------------------------------
+         		;Question 2 : specific initialisation : Ohm-meter
+         		
+000019 9ad3      		sbi 	DDRA,3
+00001a 98db      		cbi 	PORTA,3
+         		
+         		;-------------------------------------------------------------------------------
+         		;Question 3 : specific initialisation : Ohm-meter
+         		
+         		;Hopefully configure a2d
+         		;SELECTS PORT A : PIN _ Change last three digits of ADMUX
+         		
+00001b e000      		ldi 	Temp1,0b00000000
+00001c b907      		out	ADMUX,Temp1
+         		;leave in peace, run freely little one
+00001d ee00      		ldi 	Temp1,0b11100000
+00001e b906      		out	ADCSR,Temp1
+         				
+         		;-------------------------------------------------------------------------------
+         		;Question 4 : pushbutton specific initialisation
+         		;Push button port
+         		
+         		;int specific port
+         		;When changing : further changes must be made in body of code
+         		
+         		;cbi	DDRD,DDD3 ;int1
+         		;sbi	PORTD,3
+         		
+00001f 988a      		cbi	DDRD,DDD2 ;int 0
+000020 9a92      		sbi	PORTD,2
+         				
+         		;configuring int
+         		;use bits 3,2 for int1 and bit 1,0 for int0 
+         		
+000021 b705      		in 	Temp1,MCUCR
+000022 6002      		sbr 	Temp1,0b00000010;falling edge
+         		;sbr 	Temp1,0b00001000;falling edge ;int1 falling
+000023 bf05      		out 	MCUCR, Temp1
+         	
+         		;Setting interupt mask
+000024 b70a      		in 	Temp1,GIFR
+000025 7400      		cbr 	Temp1,0b10111111 ;int0
+         		;cbr 	Temp1,0b01111111 ;int1
+000026 bf0a      		out	GIFR,Temp1
+         		
+         		;Enabling timer overfill interupts
+000027 b709      		in 	Temp1,TIMSK
+000028 6001      		sbr 	Temp1,0b00000001
+000029 bf09      		out	TIMSK,Temp1
+00002a d0a0      		rcall InteruptGo
+00002b 9478      		sei
+         		
+         		;Get Pwm square wave out of PD7	
+00002c 9a8f      		sbi	DDRD,PD7
+         		;Start Timer 2
+00002d e601      		ldi	Temp1,0b01100001
+00002e bd05      		out	TCCR2,Temp1
+         		
+00002f 2744      		clr	PwmStep
+000030 2755      		clr	PwmValue
+000031 bd53      		out	OCR2,PwmValue
+         		
+         		;---------------------------------------------------------------------------------
+         		;Question 5
+         		
+         		;port C all out
+000032 ef0f      		ser Temp1
+000033 bb04      		out DDRC,Temp1
+         		;Inputs 
+         	
+000034 b30a      		in 	Temp1,DDRA
+000035 6f00      		sbr	Temp1,0xF0
+000036 bb0a      		out 	DDRA,Temp1
+         		
+         		;pullup resistors		
+000037 b30b      		in 	Temp1,PORTA
+000038 6f00      		sbr	Temp1,0xF0
+000039 bb0b      		out 	PORTA,Temp1
+         				
+         		;---------------------------------------------------------------------------------
+         		;Question 6		
+         		;Choose your port
+00003a 9ad2      		sbi	DDRA,DDA2
+00003b 9ada      		sbi	PORTA,2
+         				
+         		;---------------------------------------------------------------------------------
+         		
+         		;Sits here until char is received
+         			
+00003c d0cc      Waitchar: 	rcall	Update
+00003d 9b5f      		sbis	USR,RXC
+00003e cffd      		rjmp	Waitchar
+         		;Load char in Temp reg & compare it to special char
+00003f b10c      		in	Temp1,UDR
+         		
+         		;specialchar
+         		;cpi	Temp1,117
+000040 3705      		cpi	Temp1,SPECIAL
+000041 f411      		brne	PostSpec
+000042 d010      		rcall	SpecChar
+000043 c00d      		rjmp	Exit
+          PostSpec:			
+         		;V
+000044 3506      		cpi	Temp1,VCHAR
+000045 f411      		brne	PostVolt
+000046 d045      		rcall	VMeter
+000047 c009      		rjmp	Exit
+          PostVolt:		
+         		;R
+000048 3502      		cpi	Temp1,OCHAR
+000049 f411      		brne	PostOhm
+00004a d010      		rcall	OhmMeter
+00004b c005      		rjmp	Exit
+          PostOhm:			
+         		;B
+00004c 3402      		cpi	Temp1,BCHAR
+00004d f411      		brne	PostBeep
+00004e d0db      		rcall	Beep
+         		;No output with Beep
+00004f cfec      		rjmp	Waitchar
+          PostBeep:		
+000050 d0e8      		rcall	Waitclear
+000051 d0eb      Exit:		rcall	LineFeed		
+000052 cfe9      		rjmp	Waitchar
+         		
+         		;-------------------------------------------------------------------------------
+         		;First question
+         
+000053 2f10      SpecChar:	mov	Temp2,Temp1
+000054 e205      		ldi	Temp1,37
+000055 d0e3      		rcall	Waitclear
+000056 2f01      		mov	Temp1,Temp2
+000057 d0e1      		rcall	Waitclear
+000058 e205      		ldi	Temp1,37
+000059 d0df      		rcall	Waitclear
+00005a 9508      		ret	
+         
+         		;-------------------------------------------------------------------------------
+         		;Question 2 : Ohm meter : Rest at end of code
+         		
+00005b d003      OhmMeter:	rcall	OhmBeg
+00005c d009      		rcall	OhmCheck
+00005d d026      		rcall	OhmEnd
+00005e 9508      		ret	
+         
+          OhmBeg:		;Start counter
+00005f e004      		ldi	Temp1,0b00000100
+         		;ldi	Temp1,0b00000101
+000060 bd0e      		out	TCCR1B,Temp1
+         		;Zero value
+000061 e000      		ldi	Temp1,0
+000062 bd0d      		out	TCNT1H,Temp1
+000063 bd0c      		out	TCNT1L,Temp1	
+         		
+         		;Enable capture
+         		;cbi	ACSR,0
+         		;sbi	ACSR,2
+         		
+         		;set input & begin to charge capacitor
+000064 98d3      		cbi 	DDRA,3
+         		
+000065 9508      		ret
+         
+000066 9b45      OhmCheck:	sbis	ACSR,ACO
+000067 cffe      		rjmp	OhmCheck
+         		
+         		
+         		;in	Temp1,ICR1L
+         		;in	Temp2,ICR1H
+         		
+000068 b50c      		in	Temp1,TCNT1L
+000069 b51d      		in	Temp2,TCNT1H
+         		
+         		;Toss away LSB
+         		
+00006a 9516      		lsr	Temp2
+00006b 9507      		ror	Temp1	
+         				
+         		;mov 	Temp3, Temp1
+         		;andi 	Temp3, 0b00001111
+         		
+00006c 2fc0      		mov 	Temp4, Temp1
+00006d 70cf      		andi 	Temp4, 0b00001111
+         		
+         		;Very rough solution for clock/1024
+         		;divide by 8
+         			
+00006e 9516      		lsr	Temp2
+00006f 9507      		ror	Temp1	
+000070 9516      		lsr	Temp2
+000071 9507      		ror	Temp1	
+000072 9516      		lsr	Temp2
+000073 9507      		ror	Temp1	
+000074 9516      		lsr	Temp2
+000075 9507      		ror	Temp1	
+         						
+000076 d032      		rcall 	Convert
+000077 d024      		rcall 	OutLoop
+         		
+000078 e20e      		ldi	Temp1,'.'
+000079 d0bf      		rcall	Waitclear
+         			
+         		;Send rough decimal value
+00007a e0f2      		ldi ZH, HIGH(Decimaltbl * 2)
+00007b eae2      		ldi ZL, LOW(Decimaltbl * 2)
+         		
+00007c 0fec      		add ZL, Temp4	
+00007d 27cc      		clr Temp4
+00007e 1ffc      		adc ZH, Temp4	
+         			
+00007f 95c8      		lpm
+         			
+000080 2d00      		mov Temp1, Mes
+000081 d0b7      		rcall	Waitclear
+         					
+000082 9845      		cbi	ACSR,ACO
+000083 9508      		ret
+         
+          OhmEnd:		;go high & charge resistor
+         		
+000084 e000      		ldi	Temp1,0xb00
+000085 bd0e      		out	TCCR1B,Temp1
+         			
+000086 e000      		ldi	Temp1,0
+000087 bd0d      		out	TCNT1H,Temp1
+000088 bd0c      		out	TCNT1L,Temp1
+         		
+         		;Dischare capacitor
+000089 9ad3      		sbi 	DDRA,3
+00008a 98db      		cbi 	PORTA, 3
+         		
+         		;Disable comparator
+         		;sbi	ACSR,0
+         		
+00008b 9508      		ret
+         				
+         		;-------------------------------------------------------------------------------
+         		;Third question : Voltometer
+         
+00008c 9b34      VMeter: 	sbis	ADCSR,ADIF
+00008d cffe      		rjmp	VMeter	
+00008e d001      		rcall	carpe
+00008f 9508      		ret
+         		
+000090 9834      carpe:		cbi	ADCSR,ADIF
+000091 b104      		in	Temp1,ADCL
+000092 b115      		in	Temp2,ADCH
+000093 d003      		rcall	FourTimes
+000094 d014      		rcall 	Convert
+000095 d006      		rcall 	OutLoop
+000096 9508      		ret
+         
+000097 0f00      FourTimes:	lsl	Temp1
+000098 1f11      		rol	Temp2
+000099 0f00      		lsl	Temp1
+00009a 1f11      		rol	Temp2
+00009b 9508      		ret
+         
+00009c 2f08      OutLoop:	mov	Temp1,Tho
+00009d 5d00      		subi	Temp1,-48
+00009e d09a      		rcall	Waitclear
+00009f 2f09      		mov	Temp1,hun
+0000a0 5d00      		subi	Temp1,-48
+0000a1 d097      		rcall	Waitclear
+0000a2 2f0a      		mov	Temp1,ten
+0000a3 5d00      		subi	Temp1,-48
+0000a4 d094      		rcall	Waitclear
+0000a5 2f0b      		mov	Temp1,unit
+0000a6 5d00      		subi	Temp1,-48
+0000a7 d091      		rcall	Waitclear
+0000a8 9508      		ret	
+         
+0000a9 930f      Convert:	push	Temp1
+0000aa 931f      		push	Temp2
+0000ab 932f      		push	Temp3
+         		
+0000ac 2788      		clr	tho
+0000ad 2799      		clr	hun
+0000ae 27aa      		clr	ten
+0000af 27bb      		clr	unit
+         
+0000b0 5e08      DoThou:		subi	Temp1,LOW(1000)
+0000b1 4013      		sbci	Temp2,HIGH(1000)
+0000b2 f010      		brcs	NowHun
+0000b3 9583      		inc	tho
+0000b4 cffb      		rjmp	DoThou
+         		
+0000b5 ee28      NowHun:		ldi	Temp3,LOW(1000)
+0000b6 0f02      		add	Temp1,Temp3
+0000b7 e023      		ldi	Temp3,HIGH(1000)
+0000b8 1f12      		adc	Temp2,Temp3
+         
+0000b9 5604      DoHun:		subi	Temp1,100
+0000ba 4010      		sbci	Temp2,0
+0000bb f010      		brcs	NowTen
+0000bc 9593      		inc	hun
+0000bd cffb      		rjmp	DoHun
+         		
+0000be e624      NowTen:		ldi	Temp3,100
+0000bf 0f02      		add	Temp1,Temp3
+         		
+0000c0 500a      DoTen:		subi	Temp1,10
+0000c1 f010      		brcs	NowUnit
+0000c2 95a3      		inc	ten
+0000c3 cffc      		rjmp	DoTen
+         		
+0000c4 e02a      NowUnit:	ldi	Temp3,10
+0000c5 0f02      		add	Temp1,Temp3
+0000c6 2fb0      		mov	unit, Temp1
+         		
+0000c7 910f      		pop	Temp1
+0000c8 911f      		pop	Temp2
+0000c9 912f      		pop	Temp3
+         		
+0000ca 9508      		ret
+         		
+         		;-------------------------------------------------------------------------------
+         		
+         		;Question 4 : Push Button
+         		
+         		;-------------------------------------------------------------------------------
+         		
+0000cb b70b      InteruptGo : 		in	Temp1,GIMSK
+0000cc 6400      			sbr 	Temp1,0b01000000
+         			;sbr 	Temp1,0b10000000 ;int1
+0000cd bf0b      			out 	GIMSK,Temp1
+0000ce 9508      			ret
+         
+0000cf b70b      InteruptStop : 		in	Temp1,GIMSK
+0000d0 7b0f      			cbr 	Temp1,0b01000000
+         			;cbr 	Temp1,0b10000000 ;int1
+0000d1 bf0b      			out 	GIMSK,Temp1
+0000d2 9508      			ret
+         
+0000d3 930f      TIM0_OVF :		push	Temp1
+0000d4 b70f      			in	Temp1,SREG
+0000d5 930f      			push	Temp1
+0000d6 931f      			push	Temp2
+         			
+0000d7 953a      			dec 	TimerCount
+         			;compare
+0000d8 3030      			cpi 	TimerCount,0
+         			;If not equal jump else clear
+0000d9 f421      			brne 	CarryOn	
+0000da dff0      			rcall	InteruptGo
+         			;Stop timer
+0000db b703      			in 	Temp1,TCCR0
+0000dc 7f0e      			cbr 	Temp1,0b00000001
+0000dd bf03      			out	TCCR0,Temp1
+         	
+0000de 911f      CarryOn :		pop	Temp2
+0000df 910f      			pop	Temp1
+0000e0 bf0f      			out	SREG,Temp1
+0000e1 910f      			pop	Temp1
+0000e2 9518      			reti
+         
+         ;press button interrupt
+         
+0000e3 2744      ZeroPwm:		clr	PwmStep
+0000e4 2755      			clr	PwmValue
+0000e5 c01b      			rjmp	PostCheck
+         	
+0000e6 ef5f      KnockUp:		ser	PwmValue
+0000e7 c019      			rjmp	PostCheck
+         	
+0000e8 930f      EXT_INT0:		push	Temp1
+0000e9 b70f      			in	Temp1,SREG
+0000ea 930f      			push	Temp1
+0000eb 931f      			push	Temp2
+         					
+         			;ignore button
+0000ec dfe2      			rcall	InteruptStop
+         			
+0000ed b703      			in 	Temp1,TCCR0;clk/64 takes 8us to inc 1 us
+0000ee 6003      			sbr 	Temp1,0b0000011
+0000ef bf03      			out	TCCR0,Temp1
+         			
+0000f0 b702      			in 	Temp1,TCNT0
+0000f1 6000      			sbr 	Temp1,0x00
+0000f2 bf02      			out	TCNT0,Temp1
+         			
+         			;Change duty cycle
+         			
+0000f3 2733      			clr	TimerCount
+0000f4 b715      			in 	Temp2,MCUCR
+0000f5 b705      			in 	Temp1,MCUCR
+         			
+         			;If skips one, skips both	
+         			;using edgew detection just toggle last bit to change detection
+0000f6 fd00      			sbrc	Temp1,0
+0000f7 7f1e      			cbr 	Temp2,0b00000001;falling edge
+0000f8 fd00      			sbrc	Temp1,0
+0000f9 f441      			brne	Skip
+0000fa 6011      			sbr 	Temp2,0b00000001;rising edge
+         	
+0000fb 9543      			inc	PwmStep
+0000fc 5d5c      			subi	PwmValue,-36
+0000fd 3047      			cpi	PwmStep,7
+0000fe f339      			breq	KnockUp
+0000ff 3048      			cpi	PwmStep,8
+000100 f311      			breq	ZeroPwm
+         	
+000101 bd53      PostCheck:		out	OCR2,PwmValue
+         					
+000102 e33c      Skip:			ldi	TimerCount,60
+000103 bf15      			out 	MCUCR, Temp2
+         			
+000104 911f      			pop	Temp2
+000105 910f      			pop	Temp1
+000106 bf0f      			out	SREG,Temp1
+000107 910f      			pop	Temp1
+000108 9518      			reti
+         
+         		;-------------------------------------------------------------------------------
+         		;Question 5
+         		
+000109 2766      Update:		clr DispNum
+00010a 9bcc      		sbis	PINA,4
+00010b 5f6f      		subi	DispNum,-1
+00010c 9bcd      		sbis	PINA,5
+00010d 5f6e      		subi	DispNum,-2
+00010e 9bce      		sbis	PINA,6
+00010f 5f6c      		subi	DispNum,-4
+000110 9bcf      		sbis	PINA,7
+000111 5f68      		subi	DispNum,-8
+000112 306a      		cpi	DispNum,10
+000113 f008      		brlo	Disp
+000114 e06a      		ldi	DispNum,10	
+         			
+000115 e8ec      Disp:		ldi ZL,LOW(Sevensegtbl*2)
+000116 e0f2      		ldi ZH,HIGH(Sevensegtbl*2)
+         		
+000117 936f      		push DispNum
+000118 0f66      		lsl DispNum
+000119 0fe6      		add ZL, DispNum
+00011a 916f      		pop DispNum
+         		
+00011b 2700      		clr Temp1
+00011c 1ff0      		adc ZH,Temp1
+         		
+00011d 95c8      		lpm
+         		
+00011e ba05      		out PORTC, R0
+         
+00011f 9508      		ret
+         
+         ;1 micro second on the noggin
+000120 e40c      Delay : ldi Temp1,76
+000121 e111      Del1: 	ldi Temp2,17
+000122 e021      Del2: 	ldi Temp3,1 ; delay
+000123 952a      Del3: 	dec Temp3
+000124 f7f1      	brne Del3
+000125 951a      	dec Temp2
+000126 f7d9      	brne Del2
+000127 950a      	dec Temp1
+000128 f7c1      	brne Del1
+000129 9508      	ret
+         
+         		;-------------------------------------------------------------------------------
+         		;Question 6
+         		
+         		;using unit in loop because variable are sparse
+00012a dfa4      Beep:		rcall	InteruptStop
+00012b e0b3      		ldi	unit,3
+         		;using 1 microsec delay, there 250 * 4 should work
+         		;VIP there is no off by one if you want for use 4, not 3
+00012c ec38      BeepLoop:	ldi	TimerCount,200
+00012d 9ada      InnerBeep:	sbi	PORTA,2
+00012e dff1      		rcall	Delay
+00012f 98da      		cbi	PORTA,2
+000130 dfef      		rcall	Delay
+         		
+000131 953a      		dec	TimerCount
+000132 3030      		cpi	TimerCount,0
+000133 f7c9      		brne	InnerBeep
+         		
+000134 95ba      		dec	unit
+000135 30b0      		cpi	unit,0
+000136 f7a9      		brne	BeepLoop
+         		
+000137 df93      		rcall	InteruptGo
+000138 9508      		ret
+         
+         		;-------------------------------------------------------------------------------
+         		;Communal methods
+         
+000139 9b5d      Waitclear:	sbis	USR,UDRE
+00013a cffe      		rjmp	Waitclear
+00013b b90c      		out	UDR,Temp1
+00013c 9508      		ret
+         
+00013d 9b5d      LineFeed:	sbis	USR,UDRE
+00013e cffe      		rjmp	LineFeed
+00013f e00d      		ldi	Temp1,$0D
+000140 b90c      		out	UDR,Temp1
+         		
+000141 9b5d      Carriage:	sbis	USR,UDRE
+000142 cffe      		rjmp	Carriage
+000143 e00a      		ldi	Temp1,$0A
+000144 b90c      		out	UDR,Temp1
+000145 9508      		ret
+         
+         ;Table for Question 5		
+          Sevensegtbl:
+          	.dw $7E
+000146 007e
+          	.dw $30
+000147 0030
+          	.dw $6D
+000148 006d
+          	.dw $79
+000149 0079
+          	.dw $33
+00014a 0033
+          	.dw $5B
+00014b 005b
+          	.dw $5F
+00014c 005f
+          	.dw $70
+00014d 0070
+          	.dw $7F
+00014e 007f
+          	.dw $73
+00014f 0073
+          	.dw $4F		
+000150 004f
+         
+          Decimaltbl:
+          	.db "0011233455667889"
+000151 3030
+000152 3131
+000153 3332
+000154 3433
+000155 3535
+000156 3636
+000157 3837
+000158 3938
+          	.exit			
+
+Assembly complete with no errors.
